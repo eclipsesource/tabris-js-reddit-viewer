@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "npm run build && npm run lint",
-    "lint": "tslint --project . -t verbose",
+    "lint": "eslint . --f visualstudio --ext .ts,.tsx",
     "build": "tsc -p .",
     "watch": "tsc -p . -w --preserveWatchOutput --inlineSourceMap",
     "start": "tabris serve -a -w"
@@ -17,8 +17,12 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prefer-arrow": "^1.1.7",
+    "eslint-plugin-react": "^7.18.3",
     "ts-node": "^8.6.2",
-    "tslint": "^6.0.0",
     "typescript": "~3.3.4000"
   }
 }
