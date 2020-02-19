@@ -1,25 +1,24 @@
-import { NavigationView, Page, ui, WidgetCollection } from 'tabris';
-import { inject, shared } from 'tabris-decorators';
-import { FILL_LAYOUT } from '../common';
+import {NavigationView, Page, WidgetCollection, contentView, drawer, LayoutData} from 'tabris';
+import {inject, shared} from 'tabris-decorators';
 import SubredditSelectorView from '../ui/SubredditSelectorView';
 
 @shared export default class Navigation {
 
   private navigationView: NavigationView = (
-    <navigationView {...FILL_LAYOUT} drawerActionVisible />
+    <NavigationView stretch drawerActionVisible/>
   );
 
   constructor(
     @inject private readonly subredditSelectorView: SubredditSelectorView
   ) {
-    this.navigationView.appendTo(ui.contentView);
-    this.subredditSelectorView.set(FILL_LAYOUT);
-    this.subredditSelectorView.appendTo(ui.drawer);
-    this.subredditSelectorView.onSelect(() => ui.drawer.close());
-    ui.drawer.enabled = true;
+    this.navigationView.appendTo(contentView);
+    this.subredditSelectorView.set(LayoutData.stretch);
+    this.subredditSelectorView.appendTo(drawer);
+    this.subredditSelectorView.onSelect(() => drawer.close());
+    drawer.enabled = true;
   }
 
-  public navigateTo(target: object) {
+  navigateTo(target: object) {
     if (!(target instanceof Page)) {
       throw new Error('Unknown target');
     }

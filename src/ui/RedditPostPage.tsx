@@ -1,18 +1,17 @@
-import { Page } from 'tabris';
-import { property, ComponentJSX } from 'tabris-decorators';
-import { FILL_LAYOUT, RedditPost } from '../common';
+import {Page, ImageView, WebView, Properties} from 'tabris';
+import {property} from 'tabris-decorators';
+import {RedditPost} from '../common';
 
 export default class RedditPostPage extends Page {
 
-  @property public readonly item: RedditPost;
-  private jsxProperties: ComponentJSX<this>;
+  @property item: RedditPost;
 
-  constructor(properties: Partial<RedditPostPage>) {
+  constructor(properties: Properties<RedditPostPage>) {
     super({background: 'black'});
     this.set(properties).append(
-        this.item.data.url.endsWith('.jpg')
-      ? <imageView {...FILL_LAYOUT} image={this.item.data.url} />
-      : <webView {...FILL_LAYOUT} url={this.item.data.url} />
+      this.item.data.url.endsWith('.jpg')
+        ? <ImageView stretch image={this.item.data.url}/>
+        : <WebView stretch url={this.item.data.url}/>
     );
   }
 

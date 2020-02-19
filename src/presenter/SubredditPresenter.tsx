@@ -1,6 +1,6 @@
-import { last } from 'lodash';
-import { inject, shared } from 'tabris-decorators';
-import { AUTO_FETCH_COUNT, INITIAL_ITEM_COUNT, RedditPost, SubredditView } from '../common';
+import {last} from 'lodash';
+import {inject, shared} from 'tabris-decorators';
+import {AUTO_FETCH_COUNT, INITIAL_ITEM_COUNT, RedditPost, SubredditView} from '../common';
 import Navigation from '../service/Navigation';
 import RedditService from '../service/RedditService';
 import RedditPostPage from '../ui/RedditPostPage';
@@ -8,9 +8,10 @@ import RedditPostPage from '../ui/RedditPostPage';
 @shared export default class SubredditPresenter {
 
   private _subreddit: string;
+  private nonexistThumbnails = ['default', 'self', 'nsfw'];
 
   constructor(
-    @inject public readonly view: SubredditView,
+    @inject readonly view: SubredditView,
     @inject private readonly navigation: Navigation,
     @inject private readonly reddit: RedditService
   ) {
@@ -20,22 +21,25 @@ import RedditPostPage from '../ui/RedditPostPage';
     this.updateViewMode();
   }
 
-  public set subreddit(subreddit: string) {
+  set subreddit(subreddit: string) {
     this._subreddit = subreddit;
     this.view.title = '/r/' + this.subreddit;
     this.view.clear();
-    this.loadItems(INITIAL_ITEM_COUNT);
+    // eslint-disable-next-line no-console
+    this.loadItems(INITIAL_ITEM_COUNT).catch((ex) => console.error(ex));
   }
 
-  public get subreddit() {
+  get subreddit() {
     return this._subreddit;
   }
 
   private async loadItems(count: number) {
     try {
       const newItems = await this.reddit.fetchItems(this.subreddit, count, last(this.view.items));
-      this.view.addItems(newItems.filter(post => post.data.thumbnail !== 'default'));
+      this.view.addItems(newItems.filter(post =>
+        this.nonexistThumbnails.indexOf(post.data.thumbnail) === -1));
     } catch (ex) {
+      // eslint-disable-next-line no-console
       console.error(ex);
     }
   }
@@ -45,7 +49,7 @@ import RedditPostPage from '../ui/RedditPostPage';
   }
 
   private openDetailsPage = (item: RedditPost) => {
-    this.navigation.navigateTo(<RedditPostPage item={item} />);
-  }
+    this.navigation.navigateTo(<RedditPostPage item={item}/>);
+  };
 
 }

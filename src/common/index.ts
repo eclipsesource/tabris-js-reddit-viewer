@@ -1,9 +1,6 @@
-import { ChangeListeners, Listeners } from 'tabris-decorators';
-
-export const FILL_LAYOUT = { left: 0, top: 0, right: 0, bottom: 0 };
+import {ChangeListeners, Listeners} from 'tabris';
 
 export const INITIAL_ITEM_COUNT = 25;
-
 export const AUTO_FETCH_COUNT = 10;
 
 export const DEFAULT_REDDITS = [
@@ -28,6 +25,7 @@ export interface RedditPostData {
   url: string;
   thumbnail: string;
   title: string;
+  // eslint-disable-next-line camelcase
   num_comments: number;
   author: string;
 }
@@ -38,24 +36,32 @@ export interface RedditJsonResponse {
   };
 }
 
+export interface SelectionIndexChangeEventTarget {
+  index: number;
+}
+
 export abstract class SubredditSelectorView {
   public abstract items: string[];
   public abstract selectionIndex: number;
-  public abstract onSelectionIndexChanged: ChangeListeners<number>;
+  public abstract onSelectionIndexChanged: ChangeListeners<SelectionIndexChangeEventTarget, 'index'>;
+}
+
+export interface ViewModeChangeEventTarget {
+  mode: ViewMode;
 }
 
 export abstract class ViewModeToggleView {
-  public mode: ViewMode;
-  public onModeChanged: ChangeListeners<ViewMode>;
+  mode: ViewMode;
+  onModeChanged: ChangeListeners<ViewModeChangeEventTarget, 'mode'>;
 }
 
 export abstract class SubredditView {
-  public title: string;
-  public mode: ViewMode;
-  public items: RedditPost[];
-  public readonly viewModeToggleView: ViewModeToggleView;
-  public readonly onItemsRequested: Listeners;
-  public readonly onItemSelected: Listeners<{item: RedditPost}>;
+  title: string;
+  mode: ViewMode;
+  items: RedditPost[];
+  readonly viewModeToggleView: ViewModeToggleView;
+  readonly onItemsRequested: Listeners<{target: object}>;
+  readonly onItemSelected: Listeners<{target: object, item: RedditPost}>;
   public abstract addItems(items: RedditPost[]): any;
   public abstract clear(): any;
 }

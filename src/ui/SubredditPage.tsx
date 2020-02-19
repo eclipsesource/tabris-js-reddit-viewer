@@ -1,18 +1,18 @@
-import { CollectionView, Page, PropertyChangedEvent, Widget } from 'tabris';
-import { component, event, getById, injectable, Listeners } from 'tabris-decorators';
+import {CollectionView, Page, PropertyChangedEvent, Listeners, Properties} from 'tabris';
+import {component, event, getById, injectable} from 'tabris-decorators';
+import {isList, RedditPost, ViewMode} from '../common';
+import ViewModeToggleAction from './ViewModeToggleAction';
 import RedditGalleryCell from './RedditGalleryCell';
 import RedditListCell from './RedditListCell';
-import ViewModeToggleAction from './ViewModeToggleAction';
-import { FILL_LAYOUT, isList, RedditPost, ViewMode } from '../common';
 import * as common from '../common';
 
 @component
 @injectable({implements: common.SubredditView})
 export default class SubredditPage extends Page implements common.SubredditView {
 
-  @event public readonly onItemSelected: Listeners<{item: RedditPost}>;
-  @event public readonly onItemsRequested: Listeners;
-  public readonly viewModeToggleView: ViewModeToggleAction = (
+  @event readonly onItemSelected: Listeners<{target: SubredditPage, item: RedditPost}>;
+  @event readonly onItemsRequested: Listeners<{target: SubredditPage}>;
+  readonly viewModeToggleView: ViewModeToggleAction = (
     <ViewModeToggleAction page={this}/>
   );
 
@@ -21,22 +21,21 @@ export default class SubredditPage extends Page implements common.SubredditView 
   private loading: boolean;
   @getById private collectionView: CollectionView;
 
-  constructor(properties?: Partial<SubredditPage>) {
+  constructor(properties?: Properties<SubredditPage>) {
     super(properties);
     this.append(
-      <collectionView id='collectionView'
-          {...FILL_LAYOUT}
+      <CollectionView id='collectionView'
+          stretch
           background='#f5f5f5'
           cellType={() => this._mode}
-          cellHeight={(index, type) => isList(type) ? 96 : 160}
-          createCell={type => isList(type) ? <RedditListCell /> : <RedditGalleryCell />}
+          cellHeight={(_index, type) => isList(type) ? 96 : 160}
+          createCell={(type: string) => this.createCell(type)}
           updateCell={(view, index) => (view as Cell).item = this._items[index].data}
-          onSelect={ev => this.onItemSelected.trigger({item: this._items[ev.index]})}
           onLastVisibleIndexChanged={this.handleLastVisibleIndexChanged}/>
     );
   }
 
-  public set mode(mode: ViewMode) {
+  set mode(mode: ViewMode) {
     if (this._mode !== mode) {
       this._mode = mode;
       this.collectionView.columnCount = isList(this.mode) ? 1 : 3;
@@ -44,20 +43,20 @@ export default class SubredditPage extends Page implements common.SubredditView 
     }
   }
 
-  public get mode() {
+  get mode() {
     return this._mode;
   }
 
-  public get items() {
+  get items() {
     return this._items.concat(); // safe copy
   }
 
-  public clear() {
+  clear() {
     this._items = [];
     this.collectionView.itemCount = 0;
   }
 
-  public addItems(newItems: RedditPost[]) {
+  addItems(newItems: RedditPost[]) {
     this.loading = false;
     const insertionIndex = this._items.length;
     this._items = this._items.concat(newItems);
@@ -65,12 +64,21 @@ export default class SubredditPage extends Page implements common.SubredditView 
     this.collectionView.refreshIndicator = false;
   }
 
-  private handleLastVisibleIndexChanged = ({ value }: PropertyChangedEvent<CollectionView, number>) => {
+  createCell(type: string) {
+    const cell = isList(type) ? <RedditListCell/> : <RedditGalleryCell/>;
+    cell.onTap(() => {
+      const index = cell.parent(CollectionView).itemIndex(cell);
+      this.onItemSelected.trigger({item: this._items[index]});
+    });
+    return cell;
+  }
+
+  private handleLastVisibleIndexChanged = ({value}: PropertyChangedEvent<CollectionView, number>) => {
     if (this._items.length - value < (20 / this.collectionView.columnCount) && !this.loading) {
       this.loading = true;
       this.onItemsRequested.trigger();
     }
-  }
+  };
 
 }
 
