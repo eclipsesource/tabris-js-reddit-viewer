@@ -1,4 +1,5 @@
 import {ChangeListeners, Listeners} from 'tabris';
+import {property} from 'tabris-decorators';
 
 export const INITIAL_ITEM_COUNT = 25;
 export const AUTO_FETCH_COUNT = 10;
@@ -13,27 +14,32 @@ export const DEFAULT_REDDITS = [
 
 export enum ViewMode { Gallery = 'gallery', List = 'list' }
 
-export const isList = (viewMode: string) => viewMode === ViewMode.List;
+export class RedditPostData {
 
-export interface RedditPost {
-  kind: string;
-  data: RedditPostData;
-}
-
-export interface RedditPostData {
-  id: string;
-  url: string;
-  thumbnail: string;
-  title: string;
+  @property id: string;
+  @property url: string;
+  @property thumbnail: string;
+  @property title: string;
   // eslint-disable-next-line camelcase
-  num_comments: number;
-  author: string;
+  @property num_comments: number;
+  @property author: string;
+
+  constructor(data: any) {
+    Object.assign(this, data);
+  }
+
 }
 
-export interface RedditJsonResponse {
-  data: {
-    children: RedditPost[]
-  };
+export class RedditPost {
+
+  @property kind: string;
+  @property data: RedditPostData;
+
+  constructor(post: any) {
+    this.kind = post.kind;
+    this.data = new RedditPostData(post.data);
+  }
+
 }
 
 export interface SelectionIndexChangeEventTarget {

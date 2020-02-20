@@ -1,6 +1,6 @@
 import {Action, Page, ChangeListeners, Properties} from 'tabris';
 import {event, property} from 'tabris-decorators';
-import {isList, ViewMode, ViewModeToggleView, ViewModeChangeEventTarget} from '../common';
+import {ViewMode, ViewModeToggleView, ViewModeChangeEventTarget} from '../common';
 
 export default class ViewModeToggleAction extends Action implements ViewModeToggleView {
 
@@ -24,10 +24,7 @@ export default class ViewModeToggleAction extends Action implements ViewModeTogg
   };
 
   private handleModeChanged = () => {
-    // @ts-ignore
-    // eslint-disable-next-line
-    this.win_symbol = isList(this.mode) ? 'ViewAll' : 'List';
-    this.title = isList(this.mode) ? 'Gallery' : 'List';
+    this.title = this.mode === ViewMode.List ? 'Gallery' : 'List';
   };
 
   private attach() {

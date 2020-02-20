@@ -1,14 +1,11 @@
-import {Composite, ImageView, TextView} from 'tabris';
-import {component, property} from 'tabris-decorators';
-import {RedditPostData} from '../common';
+import {Composite, ImageView, TextView, Properties} from 'tabris';
+import {component, Cell} from 'tabris-decorators';
 
-@component export default class RedditListCell extends Composite {
+@component export default class RedditListCell extends Cell {
 
-  @property item: RedditPostData;
-
-  constructor() {
+  constructor(properties: Properties<RedditListCell>) {
     super();
-    this.append(
+    this.set(properties).append(
       <Composite
           left={16} top={8} right={16} bottom={8}
           cornerRadius={2}
@@ -17,24 +14,24 @@ import {RedditPostData} from '../common';
         <ImageView
             id='thumbView'
             width={80} height={80}
-            bind-image='item.thumbnail'
+            bind-image='item.data.thumbnail'
             background='#e0e0e0'
             scaleMode='fill'/>
         <TextView markupEnabled
             left='prev() 16' top={8} right={16}
-            bind-text='item.title'
+            bind-text='item.data.title'
             textColor='#202020'
             font='medium 14px'
             maxLines={2}/>
         <TextView
             right={16} bottom={8}
-            template-text='${item.num_comments} comments'
+            template-text='${item.data.num_comments} comments'
             alignment='right'
             textColor='#7CB342'
             font='12px'/>
         <TextView
             left='#thumbView 16' right='prev() 16' bottom={8}
-            bind-text='item.author'
+            bind-text='item.data.author'
             textColor='#767676'
             font='12px'/>
       </Composite>

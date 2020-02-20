@@ -1,17 +1,14 @@
-import {Composite, ImageView} from 'tabris';
-import {component, property} from 'tabris-decorators';
-import {RedditPostData} from '../common';
+import {ImageView, Properties} from 'tabris';
+import {component, Cell} from 'tabris-decorators';
 
-@component export default class RedditGalleryCell extends Composite {
+@component export default class RedditGalleryCell extends Cell {
 
-  @property item: RedditPostData;
-
-  constructor() {
+  constructor(properties: Properties<RedditGalleryCell>) {
     super();
-    this.append(
+    this.set(properties).append(
       <ImageView
           stretch
-          bind-image='item.thumbnail'
+          bind-image='item.data.thumbnail'
           background='#e0e0e0'
           scaleMode='fill'/>
     );
