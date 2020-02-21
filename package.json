@@ -8,7 +8,8 @@
     "lint": "eslint . --f visualstudio --ext .ts,.tsx",
     "build": "tsc -p .",
     "watch": "tsc -p . -w --preserveWatchOutput --inlineSourceMap",
-    "start": "tabris serve -a -w"
+    "start": "tabris serve -a -w",
+    "gitpod": "tabris serve -a -w --no-intro --port 8080 --external $(gp url 8080):443"
   },
   "dependencies": {
     "lodash": "^4.17.15",
