@@ -1,7 +1,10 @@
 import {Composite, ImageView, TextView, Properties} from 'tabris';
 import {component, Cell} from 'tabris-decorators';
+import {RedditPost} from '../common';
 
-@component export default class RedditListCell extends Cell {
+@component export default class RedditListCell extends Cell<RedditPost> {
+
+  itemType = RedditPost;
 
   constructor(properties: Properties<RedditListCell>) {
     super();

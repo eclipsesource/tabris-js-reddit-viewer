@@ -38,7 +38,7 @@ export default class SubredditPage extends Page implements common.SubredditView 
         <RedditGalleryCell
             height={160}
             selectable
-            itemCheck={() => this.mode !== ViewMode.List}/>
+            itemCheck={() => this.mode === ViewMode.Gallery}/>
       </ListView>
     );
   }
