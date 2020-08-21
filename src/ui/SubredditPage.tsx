@@ -1,5 +1,5 @@
 import {Page, Listeners, Properties} from 'tabris';
-import {component, injectable, event, getById, ListView, List, property} from 'tabris-decorators';
+import {component, injectable, event, getById, ListView, List, prop} from 'tabris-decorators';
 import {RedditPost, ViewMode} from '../common';
 import ViewModeToggleAction from './ViewModeToggleAction';
 import RedditGalleryCell from './RedditGalleryCell';
@@ -18,7 +18,7 @@ export default class SubredditPage extends Page implements common.SubredditView 
 
   private _mode: ViewMode;
   private loading: boolean;
-  @property private _items: List<RedditPost> = new List();
+  @prop private _items: List<RedditPost> = new List();
   @getById private listView: ListView<RedditPost>;
 
   constructor(properties?: Properties<SubredditPage>) {

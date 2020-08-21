@@ -1,5 +1,5 @@
 import {ChangeListeners, Listeners} from 'tabris';
-import {property} from 'tabris-decorators';
+import {prop} from 'tabris-decorators';
 
 export const INITIAL_ITEM_COUNT = 25;
 export const AUTO_FETCH_COUNT = 10;
@@ -16,13 +16,13 @@ export enum ViewMode { Gallery = 'gallery', List = 'list' }
 
 export class RedditPostData {
 
-  @property id: string;
-  @property url: string;
-  @property thumbnail: string;
-  @property title: string;
+  @prop id: string;
+  @prop url: string;
+  @prop thumbnail: string;
+  @prop title: string;
   // eslint-disable-next-line camelcase
-  @property num_comments: number;
-  @property author: string;
+  @prop num_comments: number;
+  @prop author: string;
 
   constructor(data: any) {
     Object.assign(this, data);
@@ -32,8 +32,8 @@ export class RedditPostData {
 
 export class RedditPost {
 
-  @property kind: string;
-  @property data: RedditPostData;
+  @prop kind: string;
+  @prop data: RedditPostData;
 
   constructor(post: any) {
     this.kind = post.kind;

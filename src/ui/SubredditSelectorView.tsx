@@ -1,5 +1,5 @@
 import {Composite, Listeners, ChangeListeners, Properties, TextView} from 'tabris';
-import {component, injectable, property, event,  ListView, Cell} from 'tabris-decorators';
+import {component, injectable, prop, event, ListView, Cell} from 'tabris-decorators';
 import * as common from '../common';
 
 @component
@@ -9,8 +9,8 @@ export default class SubredditSelectorView
   implements common.SubredditSelectorView
 {
 
-  @property selectionIndex: number = 0;
-  @property items: string[] = [];
+  @prop selectionIndex: number = 0;
+  @prop items: string[] = [];
   @event readonly onSelect: Listeners<{target: SubredditSelectorView, index: number}>;
   @event readonly onSelectionIndexChanged:
     ChangeListeners<common.SelectionIndexChangeEventTarget, 'index'>;

@@ -1,10 +1,10 @@
 import {Page, ImageView, WebView, Properties} from 'tabris';
-import {property} from 'tabris-decorators';
+import {prop} from 'tabris-decorators';
 import {RedditPost} from '../common';
 
 export default class RedditPostPage extends Page {
 
-  @property item: RedditPost;
+  @prop item: RedditPost;
 
   constructor(properties: Properties<RedditPostPage>) {
     super({background: 'black'});
