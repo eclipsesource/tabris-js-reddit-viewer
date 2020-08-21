@@ -8,7 +8,7 @@ import RedditPostPage from '../ui/RedditPostPage';
 @shared export default class SubredditPresenter {
 
   private _subreddit: string;
-  private nonexistThumbnails = ['default', 'self', 'nsfw'];
+  private nonExistentThumbnails = ['default', 'self', 'nsfw'];
 
   constructor(
     @inject readonly view: SubredditView,
@@ -37,7 +37,7 @@ import RedditPostPage from '../ui/RedditPostPage';
     try {
       const newItems = await this.reddit.fetchItems(this.subreddit, count, last(this.view.items));
       this.view.addItems(newItems.filter(post =>
-        this.nonexistThumbnails.indexOf(post.data.thumbnail) === -1));
+        this.nonExistentThumbnails.indexOf(post.data.thumbnail) === -1));
     } catch (ex) {
       // eslint-disable-next-line no-console
       console.error(ex);
