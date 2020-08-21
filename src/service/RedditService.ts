@@ -4,8 +4,24 @@ import {get} from 'lodash';
 
 @shared export default class RedditService {
 
+  retries: number = 3;
+
   async fetchItems(subreddit: string, count: number, lastItem?: RedditPost): Promise<RedditPost[]> {
-    const response = await fetch(this.createRequestUrl(subreddit, count, lastItem));
+    const url = this.createRequestUrl(subreddit, count, lastItem);
+    let attempt = 0;
+    let response: Response;
+    while (!response && (attempt++ <= this.retries)) {
+      try {
+        response = await fetch(url);
+      } catch (ex) {
+        if (attempt < this.retries) {
+          // eslint-disable-next-line no-console
+          console.debug(ex.message, 'retry...');
+        } else {
+          throw ex;
+        }
+      }
+    }
     const json = await response.json();
     const children = get(json, 'data.children', []);
     return children.map((post: any) => new RedditPost(post));
