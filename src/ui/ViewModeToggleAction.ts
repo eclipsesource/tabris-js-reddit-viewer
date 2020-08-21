@@ -1,11 +1,11 @@
 import {Action, Page, ChangeListeners, Properties} from 'tabris';
-import {event, property} from 'tabris-decorators';
+import {event, prop} from 'tabris-decorators';
 import {ViewMode, ViewModeToggleView, ViewModeChangeEventTarget} from '../common';
 
 export default class ViewModeToggleAction extends Action implements ViewModeToggleView {
 
-  @property mode: ViewMode;
-  @property page: Page;
+  @prop mode: ViewMode;
+  @prop page: Page;
   @event readonly onModeChanged: ChangeListeners<ViewModeChangeEventTarget, 'mode'>;
 
   constructor(properties: Properties<ViewModeToggleAction>) {
