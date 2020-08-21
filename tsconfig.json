@@ -3,7 +3,9 @@
     "module": "commonjs",
     "target": "es6",
     "outDir": "./dist/",
-    "lib": ["es2017"],
+    "lib": [
+      "es2017"
+    ],
     "jsx": "react",
     "jsxFactory": "JSX.createElement",
     "noImplicitAny": true,
@@ -13,7 +15,9 @@
     "alwaysStrict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   },
   "include": [
     "./src/**/*.ts",
