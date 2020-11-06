@@ -1,7 +1,6 @@
 {
   "editor.tabSize": 2,
   "files.eol": "\n",
-  "editor.formatOnSave": true,
   "json.format.enable": true,
   "typescript.format.enable": false,
   "workbench.editor.enablePreviewFromQuickOpen": false,

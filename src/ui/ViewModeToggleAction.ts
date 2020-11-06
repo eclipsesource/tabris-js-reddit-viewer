@@ -1,22 +1,17 @@
-import {Action, Page, ChangeListeners, Properties} from 'tabris';
+import {Action, ChangeListeners, Properties} from 'tabris';
 import {event, prop} from 'tabris-decorators';
-import {ViewMode, ViewModeToggleView, ViewModeChangeEventTarget} from '../common';
+import {ViewMode} from '../common';
 
-export default class ViewModeToggleAction extends Action implements ViewModeToggleView {
+export class ViewModeToggleAction extends Action {
 
   @prop mode: ViewMode;
-  @prop page: Page;
-  @event readonly onModeChanged: ChangeListeners<ViewModeChangeEventTarget, 'mode'>;
+  @event readonly onModeChanged: ChangeListeners<this, 'mode'>;
 
   constructor(properties: Properties<ViewModeToggleAction>) {
     super(properties);
-    this.on({select: this.handleSelect});
+    this.onSelect(this.handleSelect);
     this.onModeChanged(this.handleModeChanged);
     this.mode = ViewMode.List;
-    this.page.on({
-      appear: () => this.attach(),
-      disappear: () => this.detach()
-    });
   }
 
   private handleSelect = () => {
@@ -26,9 +21,5 @@ export default class ViewModeToggleAction extends Action implements ViewModeTogg
   private handleModeChanged = () => {
     this.title = this.mode === ViewMode.List ? 'Gallery' : 'List';
   };
-
-  private attach() {
-    this.page.parent().append(this);
-  }
 
 }

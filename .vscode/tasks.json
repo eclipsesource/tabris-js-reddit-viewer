@@ -1,13 +1,18 @@
 {
-  "version": "0.1.0",
-  "command": "npm",
-  "isShellCommand": true,
+  "version": "2.0.0",
   "tasks": [
     {
-      "taskName": "start"
-    },
-    {
-      "taskName": "test"
+      "label": "Serve App",
+      "type": "npm",
+      "script": "start",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$tsc-watch"
+      ]
     }
   ]
 }

@@ -1,78 +1,36 @@
-import {Page, Listeners, Properties} from 'tabris';
-import {component, injectable, event, getById, ListView, List, prop} from 'tabris-decorators';
-import {RedditPost, ViewMode} from '../common';
-import ViewModeToggleAction from './ViewModeToggleAction';
+import {Page} from 'tabris';
+import {component, injectable, inject, ListView, bindAll} from 'tabris-decorators';
 import RedditGalleryCell from './RedditGalleryCell';
 import RedditListCell from './RedditListCell';
-import * as common from '../common';
+import {SubredditViewModel} from '../viewModel/SubredditViewModel';
+import {NavPoint} from '../common';
 
+@injectable({param: NavPoint.Subreddit, shared: true})
 @component
-@injectable({implements: common.SubredditView})
-export default class SubredditPage extends Page implements common.SubredditView {
+export class SubredditPage extends Page {
 
-  @event readonly onItemSelected: Listeners<{target: SubredditPage, item: RedditPost}>;
-  @event readonly onItemsRequested: Listeners<{target: SubredditPage}>;
-  readonly viewModeToggleView: ViewModeToggleAction = (
-    <ViewModeToggleAction page={this}/>
-  );
+  @inject
+  @bindAll({
+    lastVisibleIndex: '<< ListView.lastVisibleIndex',
+    posts: '>> ListView.items',
+    columns: '>> ListView.columnCount',
+    loading: '>> ListView.refreshIndicator',
+    title: '>> :host.title'
+  })
+  readonly viewModel: SubredditViewModel;
 
-  private _mode: ViewMode;
-  private loading: boolean;
-  @prop private _items: List<RedditPost> = new List();
-  @getById private listView: ListView<RedditPost>;
-
-  constructor(properties?: Properties<SubredditPage>) {
-    super(properties);
+  constructor() {
+    super({autoDispose: false});
     this.append(
-      <ListView
-          id='listView'
-          stretch
-          background='#f5f5f5'
-          bind-items='_items'
-          onLastVisibleIndexChanged={this.handleLastVisibleIndexChanged}
-          onSelect={({item}) => this.onItemSelected.trigger({item: item as RedditPost})}>
-        <RedditListCell
+      <ListView stretch background='#f5f5f5' onSelect={this.viewModel.select}>
+        <RedditListCell selectable
             height={96}
-            selectable
-            itemCheck={() => this.mode === ViewMode.List}/>
-        <RedditGalleryCell
+            itemCheck={() => this.viewModel.columns === 1}/>
+        <RedditGalleryCell selectable
             height={160}
-            selectable
-            itemCheck={() => this.mode === ViewMode.Gallery}/>
+            itemCheck={() => this.viewModel.columns !== 1}/>
       </ListView>
     );
   }
-
-  set mode(mode: ViewMode) {
-    if (this._mode !== mode) {
-      this._mode = mode;
-      this.listView.columnCount = this.mode === ViewMode.List ? 1 : 3;
-    }
-  }
-
-  get mode() {
-    return this._mode;
-  }
-
-  get items() {
-    return Array.from(this._items);
-  }
-
-  clear() {
-    this._items = new List();
-  }
-
-  addItems(newItems: RedditPost[]) {
-    this.loading = false;
-    this._items.push(...newItems);
-    this.listView.refreshIndicator = false;
-  }
-
-  private handleLastVisibleIndexChanged = ({value}: {value: number}) => {
-    if (this._items.length - value < (20 / this.listView.columnCount) && !this.loading) {
-      this.loading = true;
-      this.onItemsRequested.trigger();
-    }
-  };
 
 }
