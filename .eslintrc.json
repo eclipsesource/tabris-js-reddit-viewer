@@ -38,7 +38,15 @@
     "FormData": false
   },
   "rules": {
-    "no-console": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "warn",
+          "error"
+        ]
+      }
+    ],
     "no-control-regex": "off",
     "no-unused-vars": "off", // handled by "@typescript-eslint/no-unused-vars"
     "no-multiple-empty-lines": [
