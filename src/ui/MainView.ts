@@ -1,4 +1,4 @@
-import {ChangeListeners, Composite, NavigationView, Page} from 'tabris';
+import {ChangeListeners, Composite, NavigationView, Page, Widget} from 'tabris';
 import {component, shared, inject, bindAll, event} from 'tabris-decorators';
 import {MainViewModel} from '../viewModel/MainViewModel';
 import {ViewModeToggleAction} from './ViewModeToggleAction';
@@ -15,27 +15,28 @@ export class MainView extends Composite {
   })
   readonly viewModel!: MainViewModel;
 
-  @event onPageChanged: ChangeListeners<MainView, 'page'>;
+  @event
+  readonly onPageChanged: ChangeListeners<MainView, 'page'>;
 
-  private navigationView: NavigationView = (
-    <NavigationView stretch drawerActionVisible>
-      <ViewModeToggleAction/>
-    </NavigationView>
-  );
+  private readonly navigationView =
+    NavigationView({
+      layoutData: 'stretch',
+      drawerActionVisible: true,
+      onRemoveChild: ev => this.handleChild(ev.child),
+      onAddChild: ev => this.handleChild(ev.child),
+      children: [ViewModeToggleAction()]
+    });
 
   constructor(
     @inject(NavPoint.Subreddit) rootPage: Page
   ) {
-    super({layoutData: 'stretch'});
-    this.navigationView
-      .append(rootPage)
-      .onRemoveChild(this.triggerPageChanged)
-      .onAddChild(this.triggerPageChanged);
+    super();
+    this.navigationView.append(rootPage);
     this.append(this.navigationView);
   }
 
   set page(page: Page) {
-    this.navigationView.pages().slice(1).detach();
+    this.navigationView.pages().slice(1).dispose();
     this.navigationView.append(page);
   }
 
@@ -43,8 +44,10 @@ export class MainView extends Composite {
     return this.navigationView.pages().last();
   }
 
-  private triggerPageChanged = () => {
-    this.onPageChanged.trigger({value: this.page});
+  private handleChild(child: Widget) {
+    if (child instanceof Page) {
+      this.onPageChanged.trigger({value: this.page});
+    }
   };
 
 }

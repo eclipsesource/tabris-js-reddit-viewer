@@ -14,8 +14,16 @@ export class RedditPostPage extends Page {
   })
   readonly viewModel!: RedditPostViewModel;
 
-  private imageView: ImageView = <ImageView stretch excludeFromLayout zoomEnabled/>;
-  private webView: WebView = <WebView stretch excludeFromLayout/>;
+  private imageView = ImageView({
+    layoutData: 'stretch',
+    excludeFromLayout: true,
+    zoomEnabled: true
+  });
+
+  private webView = WebView({
+    layoutData: 'stretch',
+    excludeFromLayout: true,
+  });
 
   constructor() {
     super({background: 'black', autoDispose: false});

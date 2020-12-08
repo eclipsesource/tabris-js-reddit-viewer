@@ -1,25 +1,25 @@
-import {Action, ChangeListeners, Properties} from 'tabris';
+import {Action, ChangeListeners, asFactory} from 'tabris';
 import {event, prop} from 'tabris-decorators';
 import {ViewMode} from '../common';
 
-export class ViewModeToggleAction extends Action {
+namespace internal {
 
-  @prop mode: ViewMode;
-  @event readonly onModeChanged: ChangeListeners<this, 'mode'>;
+  export class ViewModeToggleAction extends Action {
 
-  constructor(properties: Properties<ViewModeToggleAction>) {
-    super(properties);
-    this.onSelect(this.handleSelect);
-    this.onModeChanged(this.handleModeChanged);
-    this.mode = ViewMode.List;
+    @prop mode: ViewMode = ViewMode.List;
+    @event readonly onModeChanged: ChangeListeners<this, 'mode'>;
+
+    constructor() {
+      super();
+      this.onSelect(
+        () => this.mode = this.mode === ViewMode.List ? ViewMode.Gallery : ViewMode.List
+      );
+      this.onModeChanged.values.subscribe(
+        mode => this.title = mode === ViewMode.List ? 'Gallery' : 'List'
+      );
+    }
   }
 
-  private handleSelect = () => {
-    this.mode = this.mode === ViewMode.List ? ViewMode.Gallery : ViewMode.List;
-  };
-
-  private handleModeChanged = () => {
-    this.title = this.mode === ViewMode.List ? 'Gallery' : 'List';
-  };
-
 }
+
+export const ViewModeToggleAction = asFactory(internal.ViewModeToggleAction);

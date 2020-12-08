@@ -144,13 +144,7 @@
     "no-eval": "error",
     "no-fallthrough": "error",
     "no-new-wrappers": "error",
-    "no-shadow": [
-      "error",
-      {
-        "hoist": "all",
-        "builtinGlobals": false
-      }
-    ],
+    "no-shadow": ["off"],
     "no-throw-literal": "error",
     "no-unused-expressions": "error",
     "one-var-declaration-per-line": [
@@ -175,6 +169,12 @@
     ],
     "no-invalid-this": "off", // see typescript-eslint issue 491
     "no-dupe-class-members": "off", // allow overload syntax
+    "@typescript-eslint/no-shadow": [
+      "error",
+      {
+        "ignoreTypeValueShadow": true,
+      }
+    ],
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
       {

@@ -10,7 +10,7 @@ export class SubredditSelectorViewModel {
 
   constructor(@inject private appData: AppData) {}
 
-  select = ({item}: {item: Subreddit}) => {
+  select(item: Subreddit) {
     this.appData.view = NavPoint.Subreddit;
     this.appData.subreddit = item;
     drawer.close();

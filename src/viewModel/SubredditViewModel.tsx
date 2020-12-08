@@ -1,4 +1,3 @@
-import {last} from 'lodash';
 import {inject, injectable, List, prop, event} from 'tabris-decorators';
 import {AUTO_FETCH_COUNT, INITIAL_ITEM_COUNT, NavPoint, RedditPost, Subreddit, ViewMode} from '../common';
 import {AlertDialog, ChangeListeners} from 'tabris';
@@ -26,7 +25,7 @@ export class SubredditViewModel {
     this.onLastVisibleIndexChanged(this.handleLastVisibleIndexChanged);
   }
 
-  select = ({item}: {item: RedditPost}) => {
+  select(item: RedditPost) {
     this.appData.post = item;
     this.appData.view = NavPoint.Post;
   };
@@ -55,7 +54,7 @@ export class SubredditViewModel {
     try {
       this.loading = true;
       const {name, posts} = this.appData.subreddit;
-      const items = await this.reddit.fetchItems(name, count, last(this.posts));
+      const items = await this.reddit.fetchItems(name, count, this.posts[this.posts.length - 1]);
       const newItems = items.filter(post => IGNORE_THUMBS.indexOf(post.data.thumbnail) === -1);
       posts.push(...newItems);
     } catch {
