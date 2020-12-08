@@ -1,7 +1,8 @@
-import {ChangeListeners, Composite, NavigationView, Page, WidgetCollection} from 'tabris';
+import {ChangeListeners, Composite, NavigationView, Page} from 'tabris';
 import {component, shared, inject, bindAll, event} from 'tabris-decorators';
 import {MainViewModel} from '../viewModel/MainViewModel';
 import {ViewModeToggleAction} from './ViewModeToggleAction';
+import {NavPoint} from '../common';
 
 @shared @component
 export class MainView extends Composite {
@@ -22,25 +23,20 @@ export class MainView extends Composite {
     </NavigationView>
   );
 
-  constructor() {
+  constructor(
+    @inject(NavPoint.Subreddit) rootPage: Page
+  ) {
     super({layoutData: 'stretch'});
     this.navigationView
+      .append(rootPage)
       .onRemoveChild(this.triggerPageChanged)
       .onAddChild(this.triggerPageChanged);
     this.append(this.navigationView);
   }
 
   set page(page: Page) {
-    if (page === this.page) {
-      return;
-    }
-    const pageStack = this.navigationView.pages().toArray();
-    const pageIndex = pageStack.indexOf(page);
-    if (pageIndex !== -1) {
-      new WidgetCollection(pageStack.slice(pageIndex + 1)).dispose();
-    } else {
-      this.navigationView.append(page);
-    }
+    this.navigationView.pages().slice(1).detach();
+    this.navigationView.append(page);
   }
 
   get page() {

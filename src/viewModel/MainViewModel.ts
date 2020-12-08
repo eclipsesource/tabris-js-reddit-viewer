@@ -31,9 +31,7 @@ export class MainViewModel {
   };
 
   private syncPage = (page: Page) => {
-    if (this.reversePageMapping.has(page)) {
-      this.appData.view = this.reversePageMapping.get(page);
-    }
+    this.appData.view = this.reversePageMapping.get(page);
   };
 
 }
