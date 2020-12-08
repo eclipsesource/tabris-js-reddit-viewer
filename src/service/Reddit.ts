@@ -1,6 +1,5 @@
 import {shared} from 'tabris-decorators';
 import {RedditPost} from '../common';
-import {get} from 'lodash';
 
 @shared
 export class Reddit {
@@ -26,7 +25,7 @@ export class Reddit {
       }
     }
     const json = await response.json();
-    const children: any[] = get(json, 'data.children', []);
+    const children: any[] = json.data.children;
     return children.map(post => new RedditPost(post));
   }
 
