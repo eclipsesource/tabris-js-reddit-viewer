@@ -12,7 +12,7 @@ export class SubredditSelectorView extends Composite {
   })
   readonly viewModel: SubredditSelectorViewModel;
 
-  private listView = ListView<Subreddit>({
+  private ui = ListView<Subreddit>({
     layoutData: 'stretch',
     onSelect: ev => this.viewModel.select(ev.item),
     cellHeight: 64,
@@ -42,7 +42,7 @@ export class SubredditSelectorView extends Composite {
 
   constructor() {
     super();
-    this.append(this.listView);
+    this.append(this.ui);
   }
 
 }

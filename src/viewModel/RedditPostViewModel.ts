@@ -1,16 +1,17 @@
-import {injectable, prop, inject} from 'tabris-decorators';
-import {AppData} from '../service/AppData';
+import {injectable, prop} from 'tabris-decorators';
+import {ActionDispatcher} from '../common';
 
 @injectable
-export class RedditPostViewModel {
+export class RedditPostViewModel extends ActionDispatcher {
 
   @prop title: string;
   @prop url: string;
 
-  constructor(@inject appData: AppData) {
-    appData.onPostChanged.values.subscribe(({data}) => {
-      this.title = data.title;
-      this.url = data.url;
+  constructor() {
+    super();
+    this.appData.subscribe(({post}) => {
+      this.title = post.data.title;
+      this.url = post.data.url;
     });
   }
 

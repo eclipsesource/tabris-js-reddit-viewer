@@ -1,29 +1,21 @@
 import {shared} from 'tabris-decorators';
 import {RedditPost} from '../common';
 
+type FetchItemsArgs = {
+  subredditName: string;
+  count: number;
+  timeout: number;
+  lastItem?: RedditPost;
+};
+
 @shared
 export class Reddit {
 
-  private readonly retries: number = 3;
-
-  async fetchItems(subreddit: string, count: number, lastItem?: RedditPost): Promise<RedditPost[]> {
+  async fetchItems(
+    { subredditName: subreddit, count, timeout, lastItem }: FetchItemsArgs,
+  ): Promise<RedditPost[]> {
     const url = this.createRequestUrl(subreddit, count, lastItem);
-    let attempt = 0;
-    let response: Response;
-    let timeout = 4000;
-    while (!response && (attempt++ <= this.retries)) {
-      try {
-        response = await fetch(url, {timeout});
-      } catch (ex) {
-        if (attempt < this.retries) {
-          // eslint-disable-next-line no-console
-          console.debug(ex.message + ', retry...');
-          timeout = timeout * 2;
-        } else {
-          throw ex;
-        }
-      }
-    }
+    const response = await fetch(url, {timeout});
     const json = await response.json();
     const children: any[] = json.data.children;
     return children.map(post => new RedditPost(post));

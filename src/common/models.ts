@@ -27,6 +27,10 @@ export class RedditPost {
     this.data = new RedditPostData(post.data);
   }
 
+  toString() {
+    return this.data.id;
+  }
+
 }
 
 export class Subreddit {

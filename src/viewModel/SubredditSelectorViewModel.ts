@@ -1,19 +1,14 @@
-import {drawer} from 'tabris';
-import {injectable, prop, List, inject} from 'tabris-decorators';
-import {NavPoint, Subreddit} from '../common';
-import {AppData} from '../service';
+import {injectable, prop, List} from 'tabris-decorators';
+import {GoToSubreddit} from '../actions';
+import {ActionDispatcher, Subreddit} from '../common';
 
 @injectable
-export class SubredditSelectorViewModel {
+export class SubredditSelectorViewModel extends ActionDispatcher {
 
   @prop readonly reddits: List<Subreddit> = this.appData.reddits;
 
-  constructor(@inject private appData: AppData) {}
-
-  select(item: Subreddit) {
-    this.appData.view = NavPoint.Subreddit;
-    this.appData.subreddit = item;
-    drawer.close();
+  select(subreddit: Subreddit) {
+    this.dispatch(GoToSubreddit, {subreddit});
   };
 
 }

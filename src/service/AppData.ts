@@ -1,24 +1,32 @@
-import {ChangeListeners} from 'tabris';
-import {List, prop, shared, event} from 'tabris-decorators';
+import {Observable} from 'tabris';
+import {List, prop, shared} from 'tabris-decorators';
 import {DEFAULT_REDDITS, NavPoint, RedditPost, Subreddit, ViewMode} from '../common';
 
 @shared
 export class AppData {
 
-  @event onSubredditChanged: ChangeListeners<AppData, 'subreddit'>;
-  @event onPostChanged: ChangeListeners<AppData, 'post'>;
-  @event onViewChanged: ChangeListeners<AppData, 'view'>;
-  @event onModeChanged: ChangeListeners<AppData, 'mode'>;
+  @prop
+  readonly reddits: List<Subreddit>
+    = List.from(DEFAULT_REDDITS.map(name => new Subreddit(name)));
 
-  @prop readonly reddits: List<Subreddit>;
-  @prop subreddit: Subreddit;
-  @prop({nullable: true}) post: RedditPost = null;
-  @prop view: NavPoint = NavPoint.Subreddit;
-  @prop mode: ViewMode = ViewMode.List;
+  @prop
+  subreddit: Subreddit = this.reddits[0];
 
-  constructor() {
-    this.reddits = List.from(DEFAULT_REDDITS.map(name => new Subreddit(name)));
-    this.subreddit = this.reddits[0];
+  @prop({nullable: true})
+  post: RedditPost = null;
+
+  @prop
+  view: NavPoint = NavPoint.Subreddit;
+
+  @prop
+  mode: ViewMode = ViewMode.List;
+
+  subscribe(cb: (appData: AppData) => any) {
+    return this[Symbol.observable]().subscribe(cb);
+  }
+
+  [Symbol.observable](): Observable<this> {
+    return Observable.mutations(this);
   }
 
 }

@@ -1,7 +1,7 @@
 {
   "name": "reddit-js-reddit-viewer",
   "version": "1.0.0",
-  "main": "dist/app.js",
+  "main": "dist",
   "private": true,
   "scripts": {
     "test": "npm run build && npm run lint",

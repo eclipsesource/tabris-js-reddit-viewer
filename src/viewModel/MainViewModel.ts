@@ -1,10 +1,11 @@
 import {ChangeListeners, Page} from 'tabris';
-import {injectable, prop, inject, resolve, event} from 'tabris-decorators';
-import {NavPoint, ViewMode} from '../common';
+import {injectable, prop, resolve, event} from 'tabris-decorators';
+import {GoToView} from '../actions';
+import {NavPoint, ViewMode, ActionDispatcher} from '../common';
 import {AppData} from '../service/AppData';
 
 @injectable
-export class MainViewModel {
+export class MainViewModel extends ActionDispatcher {
 
   @event onPageChanged: ChangeListeners<MainViewModel, 'page'>;
   @event onModeChanged: ChangeListeners<MainViewModel, 'mode'>;
@@ -15,23 +16,28 @@ export class MainViewModel {
 
   private reversePageMapping = new Map<Page, NavPoint>();
 
-  constructor(
-    @inject private appData: AppData
-  ) {
-    this.appData.onViewChanged.values.subscribe(this.handleView);
+  constructor() {
+    super();
+    this.appData.subscribe(this.handleView);
     this.onPageChanged.values.subscribe(this.syncPage);
+    // TODO: this.dispatch(ToggleViewMode);
     this.onModeChanged.values.subscribe(mode => this.appData.mode = mode);
   }
 
-  private handleView = (view: NavPoint) => {
+  private handleView = ({view}: AppData) => {
     const page = resolve(Page, view);
-    this.reversePageMapping.set(page, view);
-    this.page = page;
-    this.modeAction = view === NavPoint.Subreddit;
+    if (this.page !== page) {
+      this.reversePageMapping.set(page, view);
+      this.page = page;
+      this.modeAction = view === NavPoint.Subreddit;
+    }
   };
 
   private syncPage = (page: Page) => {
-    this.appData.view = this.reversePageMapping.get(page);
+    const view = this.reversePageMapping.get(page);
+    if (this.appData.view !== view) {
+      this.dispatch(GoToView, {view});
+    }
   };
 
 }

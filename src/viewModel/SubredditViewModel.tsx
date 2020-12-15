@@ -1,67 +1,57 @@
-import {inject, injectable, List, prop, event} from 'tabris-decorators';
-import {AUTO_FETCH_COUNT, INITIAL_ITEM_COUNT, NavPoint, RedditPost, Subreddit, ViewMode} from '../common';
-import {AlertDialog, ChangeListeners} from 'tabris';
-import {AppData, Reddit} from '../service';
-
-const IGNORE_THUMBS = Object.freeze(['default', 'self', 'nsfw']);
+import {injectable, List, prop, event} from 'tabris-decorators';
+import {ActionDispatcher, AUTO_FETCH_COUNT, INITIAL_ITEM_COUNT, RedditPost, Subreddit, ViewMode} from '../common';
+import {ChangeListeners} from 'tabris';
+import {LoadPosts, ViewPost } from '../actions';
 
 @injectable
-export class SubredditViewModel {
+export class SubredditViewModel extends ActionDispatcher {
 
   @prop title: string = '';
   @prop posts: List<RedditPost> = new List();
   @prop loading: boolean = false;
   @prop lastVisibleIndex: number;
   @prop columns: number = 1;
+  @prop subreddit: Subreddit;
 
   @event readonly onLastVisibleIndexChanged: ChangeListeners<this, 'lastVisibleIndex'>;
 
-  @inject private readonly reddit: Reddit;
-  @inject private appData: AppData;
-
   constructor() {
-    this.appData.onSubredditChanged.values.subscribe(this.handleSubreddit);
-    this.appData.onModeChanged.values.subscribe(this.handleMode);
-    this.onLastVisibleIndexChanged(this.handleLastVisibleIndexChanged);
+    super();
+    this.appData.subscribe(({subreddit}) => this.handleSubreddit(subreddit));
+    this.appData.subscribe(({mode}) => this.handleMode(mode));
+    this.onLastVisibleIndexChanged(ev => this.handleLastVisibleIndexChanged(ev.value));
   }
 
   select(item: RedditPost) {
-    this.appData.post = item;
-    this.appData.view = NavPoint.Post;
+    this.dispatch(ViewPost, {post: item});
   };
 
-  private handleSubreddit = ({name, posts}: Subreddit) => {
-    this.title = '/r/' + name;
-    this.posts = posts;
-    this.loading = false;
-    if (posts.length < INITIAL_ITEM_COUNT) {
-      this.loadItems(INITIAL_ITEM_COUNT)
-        .catch((ex) => console.error(ex));
+  private handleSubreddit(subreddit: Subreddit) {
+    if (this.subreddit !== subreddit) {
+      this.subreddit = subreddit;
+      this.title = '/r/' + subreddit.name;
+      this.posts = subreddit.posts;
+      this.loading = false;
+      if (this.posts.length < INITIAL_ITEM_COUNT) {
+        this.loadItems(subreddit, INITIAL_ITEM_COUNT);
+      }
     }
   };
 
-  private handleMode = (mode: ViewMode) => {
+  private handleMode(mode: ViewMode) {
     this.columns = mode === ViewMode.Gallery ? 4 : 1;
   };
 
-  private handleLastVisibleIndexChanged = async ({value}: {value: number}) => {
-    if (this.posts.length - value < (20 / this.columns) && !this.loading) {
-      await this.loadItems(AUTO_FETCH_COUNT);
+  private async handleLastVisibleIndexChanged(index: number) {
+    if (this.posts.length - index < (20 / this.columns) && !this.loading) {
+      await this.loadItems(this.subreddit, AUTO_FETCH_COUNT);
     }
   };
 
-  private async loadItems(count: number) {
-    try {
-      this.loading = true;
-      const {name, posts} = this.appData.subreddit;
-      const items = await this.reddit.fetchItems(name, count, this.posts[this.posts.length - 1]);
-      const newItems = items.filter(post => IGNORE_THUMBS.indexOf(post.data.thumbnail) === -1);
-      posts.push(...newItems);
-    } catch {
-      AlertDialog.open('Bad connection, try again later...');
-    } finally {
-      this.loading = false;
-    }
+  private async loadItems(subreddit: Subreddit, count: number) {
+    this.loading = true;
+    await this.dispatchAsync(LoadPosts, {subreddit, count});
+    this.loading = false;
   }
 
 }
